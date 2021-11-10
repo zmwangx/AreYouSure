@@ -1,0 +1,35 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+html {
+  height: 100vh;
+  height: stretch;
+}
+
+body {
+  min-height: 100vh;
+  min-height: stretch;
+  @apply flex flex-col;
+}
+
+@supports (min-height: -moz-available) {
+  html {
+    height: 100vh;
+  }
+
+  body {
+    min-height: 100vh;
+  }
+}
+
+/* Hiding scrollbar. */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  scrollbar-width: none;
+  scrollbar-color: transparent;
+  -ms-overflow-style: none;
+}

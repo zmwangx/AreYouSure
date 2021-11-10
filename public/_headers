@@ -1,0 +1,16 @@
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  X-XSS-Protection: 1; mode=block
+
+/assets/*
+  cache-control: public,max-age=2592000,immutable
+
+/banner.png
+  cache-control: public,max-age=86400,immutable
+
+/favicon*
+  cache-control: public,max-age=86400,immutable
+
+/rick*
+  cache-control: public,max-age=86400,immutable
