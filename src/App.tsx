@@ -18,8 +18,9 @@ import ConfirmationVideo from '@/routes/ConfirmationVideo';
 import ConfirmationPhysics from '@/routes/ConfirmationPhysics';
 import ConfirmationScroll from '@/routes/ConfirmationScroll';
 import Flag from '@/routes/Flag';
+import { DeterministicPrng } from './utils';
 
-export default function App() {
+export default function App({ seed }: { seed: number }) {
   const Confirmations = [
     ConfirmationRegular,
     ConfirmationSwapped,
@@ -38,6 +39,8 @@ export default function App() {
     ConfirmationPhysics,
     ConfirmationScroll,
   ];
+  const g = new DeterministicPrng(seed);
+  const seeds = Confirmations.map(() => g.random());
   const isLast = (i: number) => i === Confirmations.length - 1;
   return (
     <div className="flex flex-1 items-center justify-center">
@@ -53,6 +56,7 @@ export default function App() {
                   index={i}
                   total={Confirmations.length}
                   nextRoute={isLast(i) ? '/flag' : `/${i + 2}`}
+                  seed={seeds[i]}
                 />
               }
             />

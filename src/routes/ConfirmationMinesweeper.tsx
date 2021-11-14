@@ -6,7 +6,7 @@ import { cloneDeep } from 'lodash';
 
 import ConfirmationRoute from '@/components/ConfirmationRoute';
 import ContinueButton from '@/components/ContinueButton';
-import { multipick, RouteProps } from '@/utils';
+import { DeterministicPrng, RouteProps } from '@/utils';
 
 type Tile = {
   index: number;
@@ -35,7 +35,7 @@ const deltas = [
 ];
 
 export default function ConfirmationMinesweeper(props: RouteProps) {
-  const { nextRoute } = props;
+  const { nextRoute, seed } = props;
 
   const [state, setState] = useState<{
     board: Board;
@@ -43,7 +43,7 @@ export default function ConfirmationMinesweeper(props: RouteProps) {
     exploded: boolean;
     passed: boolean;
   }>({
-    board: generateRandomBoard(),
+    board: generateRandomBoard(new DeterministicPrng(seed)),
     flagsCaptured: 0,
     exploded: false,
     passed: false,
@@ -108,9 +108,10 @@ export default function ConfirmationMinesweeper(props: RouteProps) {
     if (state.exploded) {
       clearTimeout(resetTimeoutId.current);
       resetTimeoutId.current = setTimeout(() => {
+        const resetSeed = Date.now();
         setState(prev => ({
           ...prev,
-          board: generateRandomBoard(),
+          board: generateRandomBoard(new DeterministicPrng(resetSeed)),
           flagsCaptured: 0,
           exploded: false,
         }));
@@ -184,7 +185,7 @@ function NeighboringMineCounter({ count }: { count: number }) {
   }
 }
 
-function generateRandomBoard(): Board {
+function generateRandomBoard(g: DeterministicPrng): Board {
   const board: Board = [];
   for (let x = 0; x < boardSize; x++) {
     for (let y = 0; y < boardSize; y++) {
@@ -202,7 +203,7 @@ function generateRandomBoard(): Board {
 
   // Pick 3 + n special tiles, the first three for three flags 'Y', 'E' and 'S',
   // the rest for mines.
-  const indices = multipick([...board.keys()], 3 + numMines);
+  const indices = g.multipick([...board.keys()], 3 + numMines);
   board[indices[0]].flag = 'Y';
   board[indices[1]].flag = 'E';
   board[indices[2]].flag = 'S';

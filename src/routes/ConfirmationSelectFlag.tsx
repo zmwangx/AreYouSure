@@ -28,11 +28,14 @@ import TR from 'flag-icon-css/flags/4x3/tr.svg'; // Turkey
 const flags = [YE, ET, ZA, CN, IN, US, ID, PK, BR, NG, BD, RU, MX, JP, PH, EG, VN, CD, IR, TR];
 
 import ConfirmationRoute from '@/components/ConfirmationRoute';
-import { RouteProps, shuffled } from '@/utils';
+import { DeterministicPrng, RouteProps } from '@/utils';
 import ContinueButton from '@/components/ContinueButton';
 
 export default function ConfirmationSelectFlag(props: RouteProps) {
-  const { nextRoute } = props;
+  const { nextRoute, seed } = props;
+
+  const g = new DeterministicPrng(seed);
+  const selectIndices = [0, 1, 2].map(() => g.shuffled([...flags.keys()]));
 
   const [selected, setSelected] = useState([-1, -1, -1]);
   const select = (index: number, value: number) => {
@@ -63,9 +66,9 @@ export default function ConfirmationSelectFlag(props: RouteProps) {
         </div>
       </div>
       <div className="mt-3 flex flex-row items-center justify-center space-x-2">
-        <FlagSelect indices={shuffled([...flags.keys()])} onChange={i => select(0, i)} />
-        <FlagSelect indices={shuffled([...flags.keys()])} onChange={i => select(1, i)} />
-        <FlagSelect indices={shuffled([...flags.keys()])} onChange={i => select(2, i)} />
+        {[0, 1, 2].map(i => (
+          <FlagSelect key={i} indices={selectIndices[i]} onChange={val => select(i, val)} />
+        ))}
       </div>
 
       <ContinueButton show={passed} nextRoute={nextRoute} />

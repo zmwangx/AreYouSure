@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import ConfirmationRoute from '@/components/ConfirmationRoute';
 import ContinueButton from '@/components/ContinueButton';
-import { RouteProps, shuffled } from '@/utils';
+import { DeterministicPrng, RouteProps } from '@/utils';
 
 // Use homographs for YES so that they can't be easily selected through typing:
 // U+03A5: Υ, GREEK CAPITAL LETTER UPSILON
@@ -14,7 +14,10 @@ const S = '\u0405';
 const alphabet = `ABCD${E}FGHIJKLMNOPQR${S}TUVWX${Y}Z`.split('');
 
 export default function ConfirmationSelect(props: RouteProps) {
-  const { nextRoute } = props;
+  const { nextRoute, seed } = props;
+
+  const g = new DeterministicPrng(seed);
+  const seeds = [0, 1, 2].map(() => g.random());
 
   const [selected, setSelected] = useState(['', '', '']);
   const select = (index: number, value: string) => {
@@ -29,9 +32,9 @@ export default function ConfirmationSelect(props: RouteProps) {
   return (
     <ConfirmationRoute {...props}>
       <div className="mt-3 flex flex-row items-center justify-center space-x-2">
-        <CharacterSelect onChange={ch => select(0, ch)} />
-        <CharacterSelect onChange={ch => select(1, ch)} />
-        <CharacterSelect onChange={ch => select(2, ch)} />
+        {[0, 1, 2].map(i => (
+          <CharacterSelect key={i} seed={seeds[i]} onChange={ch => select(i, ch)} />
+        ))}
       </div>
 
       <ContinueButton show={passed} nextRoute={nextRoute} />
@@ -39,8 +42,9 @@ export default function ConfirmationSelect(props: RouteProps) {
   );
 }
 
-function CharacterSelect({ onChange }: { onChange: (ch: string) => void }) {
-  const chars = shuffled(alphabet);
+function CharacterSelect({ seed, onChange }: { seed: number; onChange: (ch: string) => void }) {
+  const g = new DeterministicPrng(seed);
+  const chars = g.shuffled(alphabet);
   useEffect(() => {
     // Report initial state.
     onChange(chars[0]);

@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import ConfirmationRoute from '@/components/ConfirmationRoute';
 import CountdownTimer from '@/components/CountdownTimer';
 import ContinueButton from '@/components/ContinueButton';
-import { pick, random, RouteProps, shuffled } from '@/utils';
+import { DeterministicPrng, RouteProps } from '@/utils';
 
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 const initialRefreshSeconds = 3;
@@ -12,7 +12,7 @@ const minRefreshSeconds = 3;
 const maxRefreshSeconds = 12;
 
 export default function ConfirmationGridSelect(props: RouteProps) {
-  const { nextRoute } = props;
+  const { nextRoute, seed } = props;
 
   const [state, setState] = useState<{
     chars: string[];
@@ -20,7 +20,7 @@ export default function ConfirmationGridSelect(props: RouteProps) {
     timerSeconds: number;
     timerKey: number;
   }>({
-    chars: generateRandomGrid(),
+    chars: generateRandomGrid(new DeterministicPrng(seed)),
     selected: [],
     timerSeconds: initialRefreshSeconds,
     timerKey: Date.now(),
@@ -46,16 +46,18 @@ export default function ConfirmationGridSelect(props: RouteProps) {
   const refreshTimeoutId = useRef(0);
   useEffect(() => {
     const refresh = () => {
+      const refreshSeed = Date.now();
       setState(s => {
         if (passedRef.current) {
           return s;
         }
-        const refreshSeconds = Math.round(random(minRefreshSeconds, maxRefreshSeconds));
+        const g = new DeterministicPrng(refreshSeed);
+        const refreshSeconds = Math.round(g.random(minRefreshSeconds, maxRefreshSeconds));
         clearTimeout(refreshTimeoutId.current);
         refreshTimeoutId.current = setTimeout(refresh, refreshSeconds * 1000);
         return {
           ...s,
-          chars: generateRandomGrid(),
+          chars: generateRandomGrid(g),
           selected: [],
           timerSeconds: refreshSeconds,
           timerKey: Date.now(),
@@ -95,10 +97,10 @@ export default function ConfirmationGridSelect(props: RouteProps) {
   );
 }
 
-function generateRandomGrid(): string[] {
+function generateRandomGrid(g: DeterministicPrng): string[] {
   const chars = ['Y', 'E', 'S'];
   for (let i = 0; i < 46; i++) {
-    chars.push(pick(alphabet));
+    chars.push(g.pick(alphabet));
   }
-  return shuffled(chars);
+  return g.shuffled(chars);
 }

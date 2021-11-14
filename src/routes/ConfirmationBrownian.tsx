@@ -2,13 +2,15 @@ import { useNavigate } from 'react-router';
 import { motion } from 'framer-motion';
 
 import ConfirmationRoute from '@/components/ConfirmationRoute';
-import { random, RouteProps } from '@/utils';
+import { DeterministicPrng, RouteProps } from '@/utils';
 
 export default function ConfirmationBrownian(props: RouteProps) {
-  const { nextRoute } = props;
+  const { nextRoute, seed } = props;
   const navigate = useNavigate();
 
+  const g = new DeterministicPrng(seed);
   const brownianSeries = brownian({
+    g,
     minX: 20,
     minY: 20,
     maxX: window.innerWidth - 20,
@@ -42,6 +44,7 @@ export default function ConfirmationBrownian(props: RouteProps) {
 }
 
 function brownian({
+  g,
   minX,
   minY,
   maxX,
@@ -49,6 +52,7 @@ function brownian({
   stepSize,
   steps,
 }: {
+  g: DeterministicPrng;
   minX: number;
   minY: number;
   maxX: number;
@@ -60,12 +64,12 @@ function brownian({
   if (steps <= 0) {
     return series;
   }
-  let x = random(minX * 0.75 + maxX * 0.25, minX * 0.25 + maxX * 0.75);
-  let y = random(minY * 0.75 + maxY * 0.25, minY * 0.25 + maxY * 0.75);
+  let x = g.random(minX * 0.75 + maxX * 0.25, minX * 0.25 + maxX * 0.75);
+  let y = g.random(minY * 0.75 + maxY * 0.25, minY * 0.25 + maxY * 0.75);
   series.push({ x, y });
   let i = 1;
   while (i < steps) {
-    const angle = random(0, 2 * Math.PI);
+    const angle = g.random(0, 2 * Math.PI);
     const newX = x + stepSize * Math.cos(angle);
     const newY = y + stepSize * Math.sin(angle);
     if (newX < minX || newX > maxX || newY < minY || newY > maxY) {

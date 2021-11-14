@@ -4,20 +4,21 @@ import { cloneDeep } from 'lodash';
 
 import ConfirmationRoute from '@/components/ConfirmationRoute';
 import ContinueButton from '@/components/ContinueButton';
-import { pick, RouteProps } from '@/utils';
+import { DeterministicPrng, RouteProps } from '@/utils';
 
 export default function ConfirmationSevenSegment(props: RouteProps) {
   const { nextRoute } = props;
 
   const [selected, setSelected] = useState<number[][]>([[], [], []]);
   const select = (charIdx: number, segmentIdx: number) => {
+    const g = new DeterministicPrng(Math.random());
     setSelected(prev => {
       const clone = cloneDeep(prev);
       // 50% probability of one random existing segment unselected automatically.
-      if (Math.random() < 0.5) {
+      if (g.random() < 0.5) {
         const subscripts = clone.map((sub, i) => [...sub.keys()].map(j => [i, j])).flat();
         if (subscripts.length > 0) {
-          const [i, j] = pick(subscripts);
+          const [i, j] = g.pick(subscripts);
           clone[i].splice(j, 1);
         }
       }

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import ConfirmationRoute from '@/components/ConfirmationRoute';
 import ContinueButton from '@/components/ContinueButton';
 import Die from '@/components/Die';
-import { DieValue, RouteProps, unfairDiceThrow } from '@/utils';
+import { DeterministicPrng, DieValue, RouteProps, unfairDiceThrow } from '@/utils';
 
 export default function ConfirmationDice(props: RouteProps) {
   const { nextRoute } = props;
@@ -13,9 +13,10 @@ export default function ConfirmationDice(props: RouteProps) {
     passed: false,
   });
   const throwDie = () => {
+    const g = new DeterministicPrng(Math.random());
+    const values: [DieValue, DieValue] = [unfairDiceThrow(g, 1 / 6), unfairDiceThrow(g, 1 / 6)];
+    const passed = values[0] === 6 && values[1] === 6;
     setState(prev => {
-      const values: [DieValue, DieValue] = [unfairDiceThrow(1 / 6), unfairDiceThrow(1 / 6)];
-      const passed = values[0] === 6 && values[1] === 6;
       return {
         values,
         passed: prev.passed || passed,

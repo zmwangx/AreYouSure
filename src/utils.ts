@@ -1,9 +1,11 @@
+import seedrandom, { prng } from 'seedrandom';
 import colors from 'tailwindcss/colors';
 
 export type RouteProps = {
   index: number;
   total: number;
   nextRoute: string;
+  seed: number;
 };
 
 export const primaryColorPalette = [
@@ -29,36 +31,48 @@ export const primaryColorPalette = [
 
 export type DieValue = 1 | 2 | 3 | 4 | 5 | 6;
 
-export function random(floor: number, ceil: number): number {
-  return Math.random() * (ceil - floor) + floor;
-}
+export class DeterministicPrng {
+  g: prng.Prng;
 
-export function shuffled<T>(array: T[]): T[] {
-  const arr = [...array];
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+  constructor(seed: number) {
+    this.g = seedrandom(seed);
   }
-  return arr;
+
+  public random(): number;
+  public random(floor: number, ceil: number): number;
+  public random(floor?: number, ceil?: number): number {
+    floor = floor ?? 0;
+    ceil = ceil ?? 1;
+    return this.g() * (ceil - floor) + floor;
+  }
+
+  public shuffled<T>(array: T[]): T[] {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(this.g() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  public pick<T>(array: T[]): T {
+    return array[Math.floor(this.g() * array.length)];
+  }
+
+  public multipick<T>(array: T[], n: number): T[] {
+    const arr = this.shuffled(array);
+    return arr.slice(0, n);
+  }
 }
 
-export function pick<T>(array: T[]): T {
-  return array[Math.floor(Math.random() * array.length)];
-}
-
-export function multipick<T>(array: T[], n: number): T[] {
-  const arr = shuffled(array);
-  return arr.slice(0, n);
-}
-
-export function unfairDiceThrow(prob6: number): DieValue {
+export function unfairDiceThrow(g: DeterministicPrng, prob6: number): DieValue {
   // const threshold1 = 0;
   const threshold2 = (1 - prob6) / 5;
   const threshold3 = threshold2 * 2;
   const threshold4 = threshold2 * 3;
   const threshold5 = threshold2 * 4;
   const threshold6 = 1 - prob6; // === threshold2 * 5
-  const r = Math.random();
+  const r = g.random();
   if (r >= threshold6) return 6;
   if (r >= threshold5) return 5;
   if (r >= threshold4) return 4;
