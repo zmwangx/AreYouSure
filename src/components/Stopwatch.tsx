@@ -23,7 +23,7 @@ export default function Stopwatch({
           <Menu.Button
             as="div"
             className={classNames(
-              'flex items-center justify-center p-1.5 rounded-full space-x-1.5 text-white select-none cursor-pointer hover:opacity-100',
+              'flex items-center justify-center p-1.5 rounded-full shadow space-x-1.5 text-white select-none cursor-pointer hover:opacity-100',
               open ? 'opacity-100' : 'opacity-50'
             )}
             style={{ backgroundColor: color }}
