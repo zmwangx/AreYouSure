@@ -6,6 +6,7 @@ import { useWindowSize } from 'rooks';
 import copyTextToClipboard from 'copy-text-to-clipboard';
 
 import CountdownTimer from '@/components/CountdownTimer';
+import ContinueButtonDev from '@/components/ContinueButtonDev';
 import Rick from '@/components/Rick';
 import { primaryColorPalette } from '@/utils';
 
@@ -109,6 +110,7 @@ export default function Flag() {
             </button>
           </motion.div>
         )}
+        {import.meta.env.DEV && <ContinueButtonDev nextRoute="/" />}
       </AnimatePresence>
 
       <audio ref={audio} hidden>

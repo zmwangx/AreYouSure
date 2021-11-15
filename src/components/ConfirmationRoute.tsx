@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import classNames from 'classnames';
 
+import ContinueButtonDev from '@/components/ContinueButtonDev';
 import { primaryColorPalette, RouteProps } from '@/utils';
 
 export default function ConfirmationRoute({
@@ -9,6 +10,7 @@ export default function ConfirmationRoute({
   total,
   wide,
   children,
+  nextRoute,
 }: RouteProps & { wide?: boolean; children: React.ReactNode }) {
   const indices = [...Array(total).keys()];
   const last = index === total - 1;
@@ -41,6 +43,8 @@ export default function ConfirmationRoute({
         {last ? 'Are you really sure?' : 'Are you sure?'}
       </p>
       {children}
+
+      {import.meta.env.DEV && <ContinueButtonDev nextRoute={nextRoute} />}
     </motion.main>
   );
 }
