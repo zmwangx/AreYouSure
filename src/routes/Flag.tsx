@@ -110,8 +110,9 @@ export default function Flag() {
             </button>
           </motion.div>
         )}
-        {import.meta.env.DEV && <ContinueButtonDev nextRoute="/" />}
       </AnimatePresence>
+
+      {import.meta.env.DEV && <ContinueButtonDev nextRoute="/" />}
 
       <audio ref={audio} hidden>
         <source src="/rick.60s.opus" type="audio/ogg; codecs=opus" />
