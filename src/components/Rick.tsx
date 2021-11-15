@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { memoize } from 'lodash';
 
 import frames from '@/assets/rick-frames.json';
+import { useAnimationFrame } from '@/hooks/useAnimationFrame';
 
 // Never Gonna Give You Up music video, in ASCII animation form.
 export default function Rick({ maxWidth }: { maxWidth?: number }) {
@@ -16,23 +17,6 @@ export default function Rick({ maxWidth }: { maxWidth?: number }) {
       {frames[frameIndex]}
     </pre>
   );
-}
-
-function useAnimationFrame(callback: (elapsedMs: number) => void) {
-  const requestId = useRef(0);
-  const initialTimestamp = useRef(-1);
-  const animate = (timestamp: number) => {
-    if (initialTimestamp.current < 0) {
-      initialTimestamp.current = timestamp;
-    }
-    callback(timestamp - initialTimestamp.current);
-    requestId.current = requestAnimationFrame(animate);
-  };
-
-  useEffect(() => {
-    requestId.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(requestId.current);
-  }, []);
 }
 
 // Measure width of the pre block without scaling, so that we can decide the

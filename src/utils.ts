@@ -8,6 +8,7 @@ export type RouteProps = {
   seed: number;
 };
 
+export { colors };
 export const primaryColorPalette = [
   colors.red[500],
   colors.orange[500],
