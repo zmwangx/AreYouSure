@@ -44,7 +44,7 @@ export default function App({ seed }: { seed: number }) {
   ];
   const confirmationPaths = Confirmations.map((_, i) => `/${i + 1}`);
   const g = new DeterministicPrng(seed);
-  const seeds = Confirmations.map(() => g.random());
+  const [seeds, setSeeds] = useState(Confirmations.map(() => g.random()));
   const isLast = (i: number) => i === Confirmations.length - 1;
 
   const stopwatch = useStopwatch();
@@ -62,6 +62,9 @@ export default function App({ seed }: { seed: number }) {
     } else if (location.pathname === '/flag') {
       stopwatch.stop();
       setStopwatchColor(colors.rose[500]);
+      // Reset all seeds so that subsequent runs don't have the same initial state.
+      const g = new DeterministicPrng(Date.now());
+      setSeeds(Confirmations.map(() => g.random()));
     }
   }, [location]);
 
