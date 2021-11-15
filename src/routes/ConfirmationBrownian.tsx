@@ -24,7 +24,7 @@ export default function ConfirmationBrownian(props: RouteProps) {
   return (
     <ConfirmationRoute {...props}>
       <motion.button
-        className="fixed top-0 left-0 inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 sm:px-5 sm:py-3 lg:px-6 lg:py-4 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 select-none"
+        className="fixed top-0 left-0 inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 sm:px-5 sm:py-3 lg:px-6 lg:py-4 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 select-none z-50"
         animate={{
           x: xs,
           y: ys,
