@@ -81,3 +81,20 @@ export function unfairDiceThrow(g: DeterministicPrng, prob6: number): DieValue {
   if (r >= threshold2) return 2;
   return 1;
 }
+
+export function getLocalStorage(key: string): string | undefined {
+  try {
+    return localStorage[key];
+  } catch (err) {
+    console.error(err);
+    return undefined;
+  }
+}
+
+export function setLocalStorage(key: string, val: unknown): void {
+  try {
+    localStorage[key] = val;
+  } catch (err) {
+    console.error(err);
+  }
+}

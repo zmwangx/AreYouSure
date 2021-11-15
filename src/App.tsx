@@ -20,10 +20,22 @@ import ConfirmationPhysics from '@/routes/ConfirmationPhysics';
 import ConfirmationScroll from '@/routes/ConfirmationScroll';
 import Flag from '@/routes/Flag';
 import Stopwatch from '@/components/Stopwatch';
-import { colors, DeterministicPrng, primaryColorPalette } from '@/utils';
+import {
+  colors,
+  DeterministicPrng,
+  getLocalStorage,
+  primaryColorPalette,
+  setLocalStorage,
+} from '@/utils';
 import { useStopwatch } from '@/hooks/useStopwatch';
 
+const COMPLETED_AT_LOCALSTORAGE_KEY = 'completedAt';
+
 export default function App({ seed }: { seed: number }) {
+  const [completed, setCompleted] = useState(
+    getLocalStorage(COMPLETED_AT_LOCALSTORAGE_KEY) !== undefined
+  );
+
   const Confirmations = [
     ConfirmationRegular,
     ConfirmationSwapped,
@@ -62,6 +74,10 @@ export default function App({ seed }: { seed: number }) {
     } else if (location.pathname === '/flag') {
       stopwatch.stop();
       setStopwatchColor(colors.rose[500]);
+
+      setCompleted(true);
+      setLocalStorage(COMPLETED_AT_LOCALSTORAGE_KEY, Date.now());
+
       // Reset all seeds so that subsequent runs don't have the same initial state.
       const g = new DeterministicPrng(Date.now());
       setSeeds(Confirmations.map(() => g.random()));
@@ -94,9 +110,11 @@ export default function App({ seed }: { seed: number }) {
         </AnimatePresence>
       </div>
 
-      <div className="fixed top-2 left-2">
-        <Stopwatch stopwatch={stopwatch} color={stopwatchColor} />
-      </div>
+      {completed && (
+        <div className="fixed top-2 left-2">
+          <Stopwatch stopwatch={stopwatch} color={stopwatchColor} />
+        </div>
+      )}
     </>
   );
 }
