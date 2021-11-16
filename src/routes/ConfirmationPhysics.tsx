@@ -29,7 +29,7 @@ export default function ConfirmationPhysics(props: RouteProps) {
       }));
     }, secondsBeforeAnswerReveal * 1000);
     return () => clearTimeout(timeoutId);
-  });
+  }, []);
   const revealAnswer = () => {
     setState(prev => ({
       ...prev,
